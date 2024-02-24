@@ -1,15 +1,15 @@
+import axios from "axios";
 import ApiManager from "./ApiManager";
 
-export const loginWithEmail = async payload => {
-  const url = '/auth/login'; 
+export const getUserByEmail = async email => {
+  const url = `/account/get-one-with-email/${email}`; 
   try {
     const result = await ApiManager(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json'
-      },
-      data: payload
-    });
+      }
+    })
 
     return result.data;
   } catch (error) {

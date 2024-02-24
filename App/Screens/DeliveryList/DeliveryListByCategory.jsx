@@ -10,7 +10,7 @@ export default function DeliveryListByCategory() {
   const params = useRoute().params;
 
   const [type, setType] = useState(params.type);
-  const [listDelivery, setListDelivery] = useState([]);
+  const [listDelivery, setListDelivery] = useState(['12', 'dddd', 'eeee', '12', 'dddd', 'eeee']);
 
   return (
     <View style={{ padding: 20, paddingTop: 30 }}>

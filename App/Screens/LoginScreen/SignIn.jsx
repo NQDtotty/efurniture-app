@@ -1,13 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import Color from "../../Utils/Color";
 import Field from "../../Utils/Field";
 import { loginWithEmail } from "./../../api/auth";
-import axios from "axios";
-
 export default function SignIn() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const navigation = useNavigation();
@@ -25,7 +23,6 @@ export default function SignIn() {
       setListErr(errors);
       return;
     }
-    setListErr(errors);
 
     if (!isLoaded) {
       return;
@@ -33,24 +30,19 @@ export default function SignIn() {
 
     try {
       const payload = { email, password };
-      const data = await axios({
-        url: "https://api.caucalamdev.io.vn/auth/login",
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        data: payload
-      });
-      // const result = await loginWithEmail(payload);
-
-      // const completeSignIn = await signIn.create({
-      //   identifier: email,
-      //   password,
-      // });
-      // // This is an important step,
-      // // This indicates the user is signed in
-      // await setActive({ session: completeSignIn.createdSessionId });
+      const data = await loginWithEmail(payload);
+      console.log(data);
+      if (data.statusCode === 201) {
+        
+      } else if (data.statusCode === 400) {
+        errors.push('invalid');
+        setListErr(errors);
+        return;
+      } else if (data.statusCode === 500) {
+        errors.push('err');
+        setListErr(errors);
+        return;
+      }
     } catch (error) {
       console.log(error);
     }
@@ -97,6 +89,14 @@ export default function SignIn() {
             Sign In
           </Text>
         </TouchableOpacity>
+
+        <View style={{ marginTop: 12, display: listErr.includes('err') ? 'flex' : 'none' }}>
+          <Text style={{ color: 'red' }}>Some Thing Went Wrong !</Text>
+        </View>
+
+        <View style={{ marginTop: 12, display: listErr.includes('invalid') ? 'flex' : 'none' }}>
+          <Text style={{ color: 'red' }}>Account info is not valid</Text>
+        </View>
       </View>
     </View>
   );
