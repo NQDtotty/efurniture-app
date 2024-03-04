@@ -1,20 +1,32 @@
 import { View, Text, Image, StyleSheet, TextInput } from 'react-native';
-import React from 'react';
-import { useUser } from '@clerk/clerk-expo';
+import React, { useEffect, useState } from 'react';
 import Color from '../../Utils/Color';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getDigitAvatar } from '../../helpers/getFormat';
 
 export default function Header() {
-  const { user, isLoading } = useUser();
+  const [user, setUser] = useState(null);
+
+  async function getData() {
+    const userStorage = await AsyncStorage.getItem('user');
+    setUser(JSON.parse(userStorage));
+  }
+
+  useEffect(() => {
+    getData();
+  }, [user]);
 
   return user && (
     <View style={styles.container}>
       <View style={styles.profileMainContainer}>
         <View style={styles.profileContainer}>
-          <Image source={{ uri: user?.imageUrl }} style={styles.userImage} />
+          <View style={styles.userImage}>
+            <Text style={{ fontSize: 30, color: Color.WHITE, fontFamily: 'fredoka-medium' }}>{getDigitAvatar(user.name)}</Text>
+          </View>
           <View>
             <Text style={{ color: Color.WHITE, fontFamily: 'fredoka-medium' }}>Welcome</Text>
-            <Text style={{ color: Color.WHITE, fontSize: 20, fontFamily: 'fredoka-medium' }}>{user?.fullName}</Text>
+            <Text style={{ color: Color.WHITE, fontSize: 20, fontFamily: 'fredoka-medium' }}>{user.name} ({user.email})</Text>
           </View>
         </View>
 
@@ -43,7 +55,11 @@ const styles = StyleSheet.create({
   userImage: {
     width: 45,
     height: 45,
-    borderRadius: 99
+    borderRadius: 99,
+    backgroundColor: Color.THIRD,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   profileMainContainer: {
     display: 'flex',

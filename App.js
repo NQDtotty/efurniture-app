@@ -1,32 +1,24 @@
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import Welcome from './App/Screens/LoginScreen/Welcome';
-import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-expo';
-import Config from 'react-native-config';
-import * as SecureStore from "expo-secure-store";
 import { NavigationContainer } from '@react-navigation/native';
 import TabNavigation from './App/Navigations/TabNavigation';
 import AuthNavigation from './App/Navigations/AuthNavigation';
 import { useFonts } from 'expo-font';
-
-const tokenCache = {
-  async getToken(key) {
-    try {
-      return SecureStore.getItemAsync(key);
-    } catch (err) {
-      return null;
-    }
-  },
-  async saveToken(key, value) {
-    try {
-      return SecureStore.setItemAsync(key, value);
-    } catch (err) {
-      return;
-    }
-  },
-};
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState('false');
+  
+  async function getData() {
+    const data = await AsyncStorage.getItem('isLoggedIn');
+    setIsLoggedIn(data);
+  }
+
+  useEffect(() => {
+    getData();
+  }, [isLoggedIn]);
+
   const [fontsLoaded] = useFonts({
     'fredoka': require('./assets/fonts/Fredoka-Regular.ttf'),
     'fredoka-medium': require('./assets/fonts/Fredoka-Medium.ttf'),
@@ -34,25 +26,18 @@ export default function App() {
   });
 
   return (
-    <ClerkProvider
-      tokenCache={tokenCache}
-      publishableKey={'pk_test_aW1tdW5lLWFudGVsb3BlLTc1LmNsZXJrLmFjY291bnRzLmRldiQ'}>
-      <View style={styles.container}>
-
-        <SignedIn>
-          <NavigationContainer>
+    <View style={styles.container}>
+      <NavigationContainer>
+        {
+          isLoggedIn === 'true' ? (
             <TabNavigation />
-          </NavigationContainer>
-        </SignedIn>
-        <SignedOut>
-          <NavigationContainer>
+          ) : (
             <AuthNavigation />
-          </NavigationContainer>
-        </SignedOut>
-
-        <StatusBar style='auto' />
-      </View>
-    </ClerkProvider>
+          )
+        }
+      </NavigationContainer>
+      <StatusBar style='auto' />
+    </View>
   )
 }
 

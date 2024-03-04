@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import Header from './Header';
 import Category from './Category';
-import News from './News';
+import Product from './Product';
 
 export default function Home() {
   return (
@@ -10,7 +10,7 @@ export default function Home() {
       <Header />
 
       <View style={{ padding: 20 }}>
-        <News />
+        <Product />
         <Category />
       </View>
     </View>

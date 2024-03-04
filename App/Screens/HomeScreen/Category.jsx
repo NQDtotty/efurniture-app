@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import CommonHeader from '../../Components/CommonHeader';
-import { DELIVERY_ICON, DELIVERED_ICON, CANCELED_DELIVERY_ICON } from '../../../assets/icons';
+import { DELIVERY_ICON, DELIVERED_ICON, CANCELED_DELIVERY_ICON, PENCIL_RULER_ICON } from '../../../assets/icons';
 import Color from '../../Utils/Color';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,9 +21,15 @@ export default function Category() {
     },
     {
       name: 'Canceled',
-      description: 'Canceled Delivery List',
+      description: 'Canceled Order List',
       srcImage: CANCELED_DELIVERY_ICON,
-      type: 'canceled'
+      type: 'delivered'
+    },
+    {
+      name: 'Design',
+      description: 'Design Order List',
+      srcImage: PENCIL_RULER_ICON,
+      type: 'design'
     }
   ];
 
@@ -37,8 +43,8 @@ export default function Category() {
         {
           categories?.map((item, index) => (
             <TouchableOpacity style={styles.subContainer} key={index}
-              onPress={() => navigation.push('delivery-list', { type: item.type, description: item.description })}>
-              <Image source={item.srcImage} style={{ width: 45, height: 45 }} />
+              onPress={() => navigation.push('order-list', { type: item.type, description: item.description })}>
+              <Image source={item.srcImage} style={{ width: 35, height: 35 }} />
               <Text style={{fontFamily: 'fredoka-medium'}}>{item.name}</Text>
             </TouchableOpacity>
           ))
@@ -59,9 +65,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     backgroundColor: Color.LIGHT_GRAY,
-    padding: 15,
+    padding: 10,
     borderRadius: 99,
-    width: 100,
+    width: 90,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

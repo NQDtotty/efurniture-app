@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native';
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../Screens/HomeScreen/Home';
@@ -13,8 +12,8 @@ export default function HomeNavigation() {
       headerShown: false
     }}>
       <Stack.Screen name="home" component={Home} />
-      <Stack.Screen name="delivery-list" component={DeliveryListByCategory} />
-      <Stack.Screen name="delivery-details" component={DeliveryDetails} />
+      <Stack.Screen name="order-list" component={DeliveryListByCategory} />
+      <Stack.Screen name="order-details" component={DeliveryDetails} />
     </Stack.Navigator>
   )
 }

@@ -1,52 +1,66 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Color from '../../Utils/Color';
-import { getUserByEmail } from '../../api/user';
 import { useNavigation } from '@react-navigation/native';
-import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { Entypo, FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { getAccountById } from '../../api/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatDate } from '../../helpers/getFormat';
 
 export default function DeliveryListItem({ data, type }) {
+  const { address, phone, user_id: userId, createdAt, updatedAt } = data;
   const navigation = useNavigation();
-  const { total = 2, phone = '909090909', address = '55 DC', statusDelivery = 'delivery', email = 'dev@gmail.com', products = {
-    name: 'HUHU',
-    images: 'images'
-  } } = data;
-  const [userName, setUserName] = useState('sadsas');
+  const [customer, setCustomer] = useState();
+  const [emailCustomer, setEmailCustomer] = useState();
 
-  // useEffect(() => {
-  //   async function getUser(email) {
-  //     return await getUserByEmail(email);
-  //   }
+  async function getUser(userId) {
+    const token = await AsyncStorage.getItem('token');
+    const data = await getAccountById(userId, token);
+    setEmailCustomer(data.data.email);
+    setCustomer(data.data.profile.name);
+  }
 
-  //   const user = getUser(email);
-  //   setUserName(user.name);
-  // }, []);
+  useEffect(() => {
+    getUser(userId);
+  }, []);
 
   return (
     <TouchableOpacity style={styles.container} onPress={() => {
-      navigation.push('delivery-details', { orderDetails: data })
+      navigation.push('order-details', { orderDetails: data, type, emailCustomer, customer })
     }}>
-      <Image source={{ uri: products.images }} style={styles.image} />
+      {/* <Image source={{ uri: products.images }} style={styles.image} /> */}
       <View style={styles.subContainer}>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'fredoka-bold', fontSize: 18 }}>Product: {products.name}</Text>
-          <Text style={{ fontFamily: 'fredoka-bold' }}>Total: {total}</Text>
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical:8 }}>
+          <Text style={{ fontFamily: 'fredoka-bold', fontSize: 18 }}>Customer Name: {customer}</Text>
         </View>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'fredoka-medium' }}>Name: {userName}</Text>
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 2 }}>
           <Text style={{ fontFamily: 'fredoka-medium' }}>
-            <Entypo name="phone" size={17} color={Color.PRIMARY} />
-            {phone}
+            Email: {emailCustomer}
+          </Text>
+          <Text style={{ fontFamily: 'fredoka-medium' }}>
+            Phone: {phone}
           </Text>
         </View>
-        <Text style={{ fontFamily: 'fredoka-medium'}}>
+        <Text style={{ fontFamily: 'fredoka-medium', marginVertical: 2}}>
           <Entypo name="location-pin" size={17} color={Color.PRIMARY} />
           {address}
           </Text>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 2 }}>
           {
             getStatus(type)
           }
+          {
+            (type === 'delivery' || type === 'design') ? (
+              <View>
+                <Text style={{ fontFamily: 'fredoka-medium' }}>{formatDate(createdAt)}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={{ fontFamily: 'fredoka-medium' }}>{formatDate(updatedAt)}</Text>
+              </View>
+            )
+          }
+          
         </View>
       </View>
     </TouchableOpacity>
@@ -94,7 +108,7 @@ const styles = StyleSheet.create({
   subContainer: {
     display: 'flex',
     justifyContent: 'space-around',
-    width: '70%'
+    width: '100%'
   },
   image: {
     width: 100,

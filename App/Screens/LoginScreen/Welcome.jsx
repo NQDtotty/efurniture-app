@@ -14,25 +14,9 @@ export default function Welcome() {
   
   useWarmUpBrowser();
 
-  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-
-  const signInWithGoogle = React.useCallback(async () => {
-    try {
-      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
-
-      if (createdSessionId) {
-        setActive({ session: createdSessionId });
-      } else {
-        // Use signIn or signUp for next steps such as MFA
-      }
-    } catch (err) {
-      console.error("OAuth error", err);
-    }
-  }, []);
-
   return (
     <View style={{ alignItems: 'center' }}>
-      <Image source={require('./../../../assets/images/login.png')} style={styles.loginImage} />
+      <Image source={require('./../../../assets/images/login.jpg')} style={styles.loginImage} />
 
       <View style={styles.subContainer}>
         <Text style={{
@@ -57,7 +41,7 @@ export default function Welcome() {
           margin: 13
         }}>Or</Text>
 
-        <TouchableOpacity style={styles.button} onPress={signInWithGoogle}>
+        <TouchableOpacity style={styles.button}>
           <AntDesign name="google" size={24} color="black" />
           <Text style={{ textAlign: 'center', fontSize: 17, color: Color.PRIMARY, fontFamily: 'fredoka-medium' }}>
             Continue With Google
@@ -71,7 +55,7 @@ export default function Welcome() {
 
 const styles = StyleSheet.create({
   loginImage: {
-    width: 230,
+    width: 330,
     height: 450,
     marginTop: 70,
     borderWidth: 4,

@@ -5,6 +5,8 @@ node_modules/
 
 .vscode/
 
+%ProgramData%/
+
 # Expo
 .expo/
 dist/

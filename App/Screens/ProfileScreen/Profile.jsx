@@ -1,11 +1,37 @@
 import { View, Text, Image, FlatList, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { useUser } from '@clerk/clerk-expo';
 import Color from '../../Utils/Color';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useAuth } from "@clerk/clerk-expo";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAccountById } from '../../api/user';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Profile() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigation();
+  
+  async function getUser() {
+    const token = await AsyncStorage.getItem('token');
+    const userId = await AsyncStorage.getItem('userId');
+    console.log(userId)
+
+    const data = await getAccountById(userId, token);
+    setUser(data.data);
+  }
+  
+  async function logout() {
+    await AsyncStorage.setItem('isLoggedIn', 'false');
+    await AsyncStorage.setItem('token', '');
+    await AsyncStorage.setItem('user', null);
+    await AsyncStorage.setItem('userId', '');
+
+    navigate.navigate('/auth');
+  }
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const profileMenu = [
     {
       name: 'My Profile',
@@ -32,16 +58,13 @@ export default function Profile() {
       icon: 'logout'
     }
   ];
-  const { user } = useUser();
   const [option, setOption] = useState(0);
 
-  const { isLoaded, signOut } = useAuth();
-
-  if (!isLoaded) {
-    return null;
-  }
-
+  // useEffect(() => {
+  //   getData();
+  // }, []);
   useEffect(() => {
+    console.log(user)
     if (option === 1) {
 
     } else if (option === 2) {
@@ -51,7 +74,7 @@ export default function Profile() {
     } else if (option === 4) {
 
     } else if (option === 5) {
-      signOut();
+      logout();
     }
   }, [option]);
 
@@ -66,7 +89,7 @@ export default function Profile() {
           alignItems: 'center',
           padding: 20
         }}>
-          <Image source={{ uri: user.imageUrl }} style={{ width: 90, height: 90, borderRadius: 99 }} />
+          <Image source={{ }} style={{ width: 90, height: 90, borderRadius: 99 }} />
 
           {/* Name */}
           <Text style={{
@@ -76,7 +99,7 @@ export default function Profile() {
             marginTop: 8,
             textAlign: 'center'
           }}>
-            {user.fullName}
+            {user?.profile.name}
           </Text>
 
           {/* Email Address */}
@@ -86,7 +109,7 @@ export default function Profile() {
             color: Color.LIGHT_GRAY,
             marginTop: 8
           }}>
-            {user?.primaryEmailAddress.emailAddress}
+            {user?.email}
           </Text>
         </View>
       </View>

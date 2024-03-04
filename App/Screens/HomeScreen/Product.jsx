@@ -2,11 +2,11 @@ import { View, Text, FlatList } from 'react-native';
 import React from 'react';
 import CommonHeader from '../../Components/CommonHeader';
 
-export default function News() {
+export default function Product() {
 
   return (
     <View style={{ marginTop: 15 }}>
-      <CommonHeader text={'News'} />
+      <CommonHeader text={'New Product'} />
 
       <FlatList />
     </View>

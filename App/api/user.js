@@ -1,13 +1,13 @@
-import axios from "axios";
 import ApiManager from "./ApiManager";
 
-export const getUserByEmail = async email => {
-  const url = `/account/get-one-with-email/${email}`; 
+export const getAccountById = async (userId, token) => {
+  const url = `/account/${userId}`; 
   try {
     const result = await ApiManager(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     })
 

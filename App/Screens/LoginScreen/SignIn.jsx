@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import { useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons';
 import Color from "../../Utils/Color";
 import Field from "../../Utils/Field";
 import { loginWithEmail } from "./../../api/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function SignIn() {
-  const { signIn, setActive, isLoaded } = useSignIn();
   const navigation = useNavigation();
 
   const [email, setEmail] = React.useState("");
@@ -24,16 +24,26 @@ export default function SignIn() {
       return;
     }
 
-    if (!isLoaded) {
-      return;
-    }
-
     try {
       const payload = { email, password };
       const data = await loginWithEmail(payload);
-      console.log(data);
+
       if (data.statusCode === 201) {
-        
+        const { id: profileId, name, phone, user_id: userId  } = data.data.profile.profile;
+        const { email, role } = data.data.profile.user;
+        const inforUser = Object.create(null);
+        inforUser.profileId = profileId;
+        inforUser.name = name;
+        inforUser.phone = phone;
+        inforUser.userId = userId;
+        inforUser.email = email;
+        inforUser.role = role;
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('token', data.data.token);
+        await AsyncStorage.setItem('user', JSON.stringify(inforUser));
+        await AsyncStorage.setItem('userId', userId);
+
+        navigation.navigate('Home');
       } else if (data.statusCode === 400) {
         errors.push('invalid');
         setListErr(errors);
